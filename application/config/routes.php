@@ -1,12 +1,15 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$m = $this->config->item("module_name");
+$module = $this->config->item("current_module_name");
+$languages = $this->config->item("languages");
 
-$route['default_controller'] = $m.'/home';
+$route['default_controller'] = $module.'/test';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+foreach ($languages as $key => $lang) {
+  $route[$lang] = $module.'/home';
+}
 
-$route["test"] = $m."/home/test";
-// echo $route["test"];die;
+$route = Route::map($route,$languages,$module);

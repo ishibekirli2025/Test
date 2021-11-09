@@ -114,3 +114,34 @@ if (!function_exists("str_limit")) {
     return $string;
   }
 }
+
+
+if (!function_exists('rest_response')) {
+  function rest_response($code = null,$message = null,$data = []){
+    return [
+      "code" => $code,
+      "message" => $message,
+      "data" => $data
+    ];
+  }
+}
+
+
+if (!function_exists("json_response")) {
+  function json_response($data,$no_auth = null){
+    if(!$data) echo json_encode(rest_response(409,"No body")); die;
+    if (!is_array($data)) die($data);
+    $CI = get_instance();
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
+    header('Content-Type: application/json');
+    $config = $CI->config->item('api_entry_credentials');
+    // $headers = isset($_SERVER['HTTP_']) ? $_SERVER['HTTP_'] : NULL;
+    // if (!$ukey || !$usecret || !isset($config[$usecret]) || $ukey !== $config[$usecret]['api_ukey']) {
+    //   echo json_encode(rest_response(409,lang("Not authorized")));
+    //   die;
+    // }
+    echo json_encode($data);
+    die;
+  }
+}

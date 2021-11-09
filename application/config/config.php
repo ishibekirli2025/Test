@@ -1,12 +1,14 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+
 require_once APPPATH . 'third_party/Language.php';
+$config["modules_locations"] = [APPPATH . '../modules/' => '../../modules/'];
+$config = Language::start(["az","en","ru","tr"],"az",$config);
 
-$config['modules_locations'] = [APPPATH . '../modules/' => '../../modules/'];
 
-$config = Language::start(["az","en","ru","tr"],"az");
+$config["current_module_name"] = "default";
 
-$config["module_name"] = "default";
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +32,7 @@ $config["module_name"] = "default";
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://my.hvmc.loc/';
+$config['base_url'] = 'http://my.hmvc.loc/';
 
 /*
 |--------------------------------------------------------------------------

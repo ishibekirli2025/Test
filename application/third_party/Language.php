@@ -16,12 +16,13 @@ class Language {
     return $lang;
   }
 
-  public static function start($languages, $default = NULL){
+  public static function start($languages, $default = NULL,$config = []){
     self::$default = $default;
     self::$languages = $languages;
     array_unshift($languages,"");
     $config["languages"] = $languages;
-    $config["language"] = self::getlang();
+    $config["current_language"] = self::getlang();
+    $config["language"] = $default;
     return $config;
   }
 
