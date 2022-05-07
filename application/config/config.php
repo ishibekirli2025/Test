@@ -1,38 +1,28 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-require_once APPPATH . 'third_party/Language.php';
 $config["modules_locations"] = [APPPATH . '../modules/' => '../../modules/'];
-$config = Language::start(["az","en","ru","tr"],"az",$config);
 
+$config["sub_domain_modules"] = FALSE;
 
-$config["current_module_name"] = "default";
+if ($config["sub_domain_modules"]) {
+  $config["current_module_name"] = "web";
 
+  if (isset(explode("/", $_SERVER["REQUEST_URI"], 3)[1]) && explode("/", $_SERVER["REQUEST_URI"], 3)[1] === "api") {
+    $config["current_module_name"] = "api";
+  } else {
+    $config = Language::start(["az","en","ru"],"az",$config);
+  }
+} else {
+  $config = Language::start(["az","en","ru","tr"],"az",$config);
 
+  $config["current_module_name"] = "default";
+}
 
-/*
-|--------------------------------------------------------------------------
-| Base Site URL
-|--------------------------------------------------------------------------
-|
-| URL to your CodeIgniter root. Typically this will be your base URL,
-| WITH a trailing slash:
-|
-|	http://example.com/
-|
-| WARNING: You MUST set this value!
-|
-| If it is not set, then CodeIgniter will try guess the protocol and path
-| your installation, but due to security concerns the hostname will be set
-| to $_SERVER['SERVER_ADDR'] if available, or localhost otherwise.
-| The auto-detection mechanism exists only for convenience during
-| development and MUST NOT be used in production!
-|
-| If you need to allow multiple domains, remember that this file is still
-| a PHP script and you can easily do that on your own.
-|
-*/
-$config['base_url'] = 'http://my.hmvc.loc/';
+$config["device_active"] = FALSE;
+
+$config['base_url'] = "http://my.hmvc.loc/";
+
 
 /*
 |--------------------------------------------------------------------------

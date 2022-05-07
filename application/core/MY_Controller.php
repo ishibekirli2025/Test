@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 date_default_timezone_set('Asia/Baku');
 
@@ -12,8 +13,8 @@ class MY_Controller extends MX_Controller
     parent::__construct();
     $this->custom_input = new Input;
 
-    $this->__filter_params = array($this->uri->uri_string());
-    $this->call_filters('before');
+    $this->__filter_params = [$this->uri->uri_string()];
+    $this->call_filters("before");
   }
 
   public function _remap($method, $parameters = [])  {
@@ -56,12 +57,13 @@ class MY_Controller extends MX_Controller
   }
 
   function view($params,$data = []){
+    $device = $this->config->item("device_active") ? device() : "";
     if (is_array($params)) {
       foreach ($params as $path) {
-        $this->load->view(device().$path,$data);
+        $this->load->view($device . $path,$data);
       }
     }else{
-      $this->load->view(device().$params,$data);
+      $this->load->view($device . $params,$data);
     }
   }
 }

@@ -267,6 +267,7 @@ switch (ENVIRONMENT)
 	}
 
 	define('APPPATH', $application_folder.DIRECTORY_SEPARATOR);
+	require_once APPPATH . 'third_party/Language.php';
 
 	// The path to the "views" directory
 	if ( ! isset($view_folder[0]) && is_dir(APPPATH.'views'.DIRECTORY_SEPARATOR))

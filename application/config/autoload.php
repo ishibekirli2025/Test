@@ -59,7 +59,9 @@ $autoload['packages'] = [];
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
 $autoload['libraries'] = [
-  "Input"
+  "Input",
+  "Flash",
+  "Custom_model"
 ];
 
 /*
@@ -108,8 +110,9 @@ $autoload['helper'] = [
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = [
-  "default"
+$autoload["config"] = [
+  "default",
+  "modules"
 ];
 
 /*
