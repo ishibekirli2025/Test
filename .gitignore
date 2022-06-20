@@ -1,0 +1,15 @@
+
+application/config/secrets.php
+application/config/database.php
+
+old/*
+!old/.gitkeep
+
+.htaccess
+!assets/.htaccess
+!application/.htaccess
+
+user_guide
+
+
+modules/*/configs/secrets.php
