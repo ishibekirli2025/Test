@@ -13,3 +13,6 @@ user_guide
 
 
 modules/*/configs/secrets.php
+
+
+error_log

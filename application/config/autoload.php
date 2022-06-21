@@ -95,7 +95,8 @@ $autoload['drivers'] = [];
 */
 $autoload['helper'] = [
   "default",
-  "url"
+  "url",
+  "validate"
 ];
 
 /*

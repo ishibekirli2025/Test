@@ -1,13 +1,14 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
-if (!function_exists('assets')) {
+if (!function_exists("assets")) {
   function assets($path,$minify = false) {
     if(!$path) return "";
     $CI = get_instance();
     $folder = $CI->config->item("assets_path")."/";
     $is_production = $CI->config->item("system_mode") === "production";
 
-    $version = !$is_production && isset(pathinfo($path)["extension"]) && in_array(pathinfo($path)["extension"],["js","css"]) ? '?v='.uniqid() : "";
+    $version = !$is_production && isset(pathinfo($path)["extension"]) && in_array(pathinfo($path)["extension"],["js","css"]) ? '?v='.uniqid() : "?v=".$CI->config->item("asset_version");
 
     if (!$minify) {
       return base_url($folder.$path).$version;
@@ -22,7 +23,7 @@ if (!function_exists('assets')) {
 }
 
 
-if (!function_exists('lang')) {
+if (!function_exists("lang")) {
   function lang($key = null){
     if(!$key) return "";
     $CI = get_instance();
@@ -31,7 +32,7 @@ if (!function_exists('lang')) {
 }
 
 
-if (!function_exists('readSVG')) {
+if (!function_exists("readSVG")) {
   function readSVG($name = null){
     if(!$name) return "";
     $CI = get_instance();
@@ -129,6 +130,7 @@ if (!function_exists('rest_response')) {
 
 if (!function_exists("json_response")) {
   function json_response($data,$no_auth = null){
+    header('Content-Type: application/json');
     if(!$data) {
       echo json_encode(rest_response(409,"No body"));
       die;
@@ -137,9 +139,8 @@ if (!function_exists("json_response")) {
     $CI = get_instance();
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
-    header('Content-Type: application/json');
     $config = $CI->config->item('api_entry_credentials');
-    
+
     echo json_encode($data);
     die;
   }
