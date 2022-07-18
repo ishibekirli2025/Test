@@ -2,6 +2,12 @@
 application/config/secrets.php
 application/config/database.php
 
+application/cache/*
+!application/cache/index.html
+
+application/logs/*
+!application/logs/index.html
+
 old/*
 !old/.gitkeep
 

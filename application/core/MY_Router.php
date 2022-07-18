@@ -1,17 +1,140 @@
-<?php (defined('BASEPATH')) OR exit('No direct script access allowed');
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /* load the MX_Router class */
-require APPPATH."third_party/MX/Router.php";
+require APPPATH . "third_party/MX/Router.php";
 
-include_once(APPPATH.'libraries/Route.php');
+include_once APPPATH . "libraries/Route.php";
 
 class MY_Router extends MX_Router {
-
 
 	private $active_route;
 
 	private $module_name;
 
+
+	private function module_name(){
+		if (!$this->module_name) {
+			include APPPATH."config/config.php";
+			$this->module_name = isset($config["current_module_name"]) ? $config["current_module_name"] : "default";
+		}
+		return $this->module_name;
+	}
+
+
+
+	public function locate($segments)	{
+		if (isset($_SERVER['REQUEST_URI']) && ($_SERVER['REQUEST_URI'] === "/" || $_SERVER['REQUEST_URI'] === "")) {
+			return parent::locate($segments);
+		} else {
+			$this->module = $this->directory = "";
+			$ext = $this->config->item("controller_suffix") . EXT;
+
+			// Use module route if available
+			if (isset($segments[0]) && $routes = Modules::parse_routes($segments[0], implode('/', $segments))) {
+	    	$segments = $routes;
+			}
+
+			// Get the segments array elements
+			list($module, $directory, $controller) = array_pad($segments, 3, NULL);
+
+			// ------------------------------------------------------------------------
+			// 1. Check modules (recursive)
+			// ------------------------------------------------------------------------
+			foreach (Modules::$locations as $location => $offset) {
+				// Module controllers/ exists?
+				if (is_dir($source = $location . $module . "/controllers/")) {
+					$this->module    = $module;
+					$this->directory = $offset . $module . "/controllers/";
+
+					// Temporary helper variables
+					$base_directory = $this->directory;
+					$segments_copy  = array_slice($segments, 1);
+
+					do {
+						if (isset($segments_copy[0]) && $directory !== $segments_copy[0]) {
+							$this->directory  = $base_directory . $directory . '/';
+							$directory       .= '/' . $segments_copy[0];
+						}
+
+						if ($directory && is_file($source . ucfirst($directory) . $ext)) {
+	    				return $segments_copy;
+						}
+
+						// Move forward through the segments
+						$segments_copy = array_slice($segments_copy, 1);
+					}
+					while (!empty($segments_copy) && $directory && is_dir($source . $directory . '/'));
+					// Check for default module-named controller
+					if (is_file($source . $module . $ext)) {
+						$this->directory = $base_directory;
+						return $segments;
+					}
+				}
+			}
+
+
+			// foreach
+			// ------------------------------------------------------------------------
+			// 2. Check app controllers in APPPATH/controllers/
+			// ------------------------------------------------------------------------
+			if (is_file(APPPATH . '../modules/' . $this->module_name() . '/controllers/' . $module . $ext)) {
+				return $segments;
+			}
+
+			// Application sub-directory controller exists?
+			if ($directory && is_file(APPPATH . '../modules/' . $this->module_name() . '/controllers/' . $module . '/' . $directory . $ext)) {
+	    	$this->directory = $module . '/';
+	    	return array_slice($segments, 1);
+			}
+
+			// ------------------------------------------------------------------------
+			// 4. Check multilevel sub-directories in APPPATH/controllers/
+			// ------------------------------------------------------------------------
+			if ($directory) {
+				$dir = '';
+				do {
+					// Go forward in segments to check for directories
+					empty($dir) OR $dir .= '/';
+					$dir .= $segments[0];
+
+					// Update segments array
+					$segments = array_slice($segments, 1);
+				}
+				while (count($segments) > 0 && is_dir(APPPATH . '../modules/'.$this->module_name().'/controllers/' . $dir . '/' . $segments[0]));
+
+				// Set the directory and remove it from the segments array
+				$this->directory = str_replace('.', '', $dir) . '/';
+				// If no controller found, use 'default_controller' as defined in 'config/routes.php'
+				if (count($segments) > 0 && ! file_exists(APPPATH . '../modules/'.$this->module_name().'/controllers/' . $this->fetch_directory() . $segments[0] . EXT)) {
+		    	array_unshift($segments, $this->default_controller);
+				} else if (empty($segments) && is_dir(APPPATH . '../modules/'.$this->module_name().'/controllers/' . $this->directory)) {
+		    	$segments = array($this->default_controller);
+				}
+
+				if (count($segments) > 0) {
+	    	// Does the requested controller exist in the sub-folder?
+	    		if ( ! file_exists(APPPATH . '../modules/'.$this->module_name().'/controllers/' . $this->fetch_directory() . $segments[0] . EXT)) {
+	        	$this->directory = '';
+	    		}
+				}
+
+				if ($this->directory . $segments[0] != $module . '/' . $this->default_controller && count($segments) > 0 && file_exists(APPPATH . '../modules/'.$this->module_name().'/controllers/' . $this->fetch_directory() . $segments[0] . EXT ) ) {
+					return $segments;
+				}
+			}
+
+			// ------------------------------------------------------------------------
+			// 5. Check application sub-directory default controller
+			// ------------------------------------------------------------------------
+			if (is_file(APPPATH . '../modules/'.$this->module_name().'/controllers/' . $module . '/' . $this->default_controller . $ext))
+			{
+	    	$this->directory = $module . '/';
+	    	return array($this->default_controller);
+			}
+		}
+
+	}
 
 	/**
 	 * _set_routing
@@ -21,19 +144,13 @@ class MY_Router extends MX_Router {
 	 *
 	 * @return	void
 	 */
-	public function _set_routing()
-	{
-		include(APPPATH."config/config.php");
-		$this->module_name = $config["current_module_name"];
-		// Load the routes.php file.
-		if (is_dir(APPPATH.'../modules/'.$this->module_name.'/routes'))
-		{
-			$file_list = scandir(APPPATH.'../modules/'.$this->module_name.'/routes');
-			foreach($file_list as $file)
-			{
-				if (is_file(APPPATH.'../modules/'.$this->module_name.'/routes/'.$file) and pathinfo($file, PATHINFO_EXTENSION) == 'php')
-				{
-					include(APPPATH.'../modules/'.$this->module_name.'/routes/'.$file);
+	public function _set_routing() {
+
+		if (is_dir(APPPATH.'../modules/'.$this->module_name().'/routes')) {
+			$file_list = scandir(APPPATH.'../modules/'.$this->module_name().'/routes');
+			foreach($file_list as $file) {
+				if (is_file(APPPATH.'../modules/'.$this->module_name().'/routes/'.$file) and pathinfo($file, PATHINFO_EXTENSION) == 'php') {
+					include APPPATH.'../modules/'.$this->module_name().'/routes/'.$file;
 				}
 			}
 		}
@@ -123,11 +240,6 @@ class MY_Router extends MX_Router {
 			}
 		}
 
-
-		// If we got this far it means we didn't encounter a
-		// matching route so we'll show the 404 error, because all routes
-		// are now static
-		//Die, you dinamic routes!!!!
 		show_404();
 	}
 

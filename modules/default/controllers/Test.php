@@ -16,4 +16,13 @@ class Test extends MY_Controller{
     echo "route_test";
   }
 
+  function routeByID($id) {
+    echo "ID is $id";
+  }
+
+
+  function routeByMultiParams($id,$name) {
+    echo "ID is $id and name is '$name'";
+  }
+
 }
