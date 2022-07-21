@@ -57,7 +57,7 @@ class MY_Router extends MX_Router {
 							$directory       .= '/' . $segments_copy[0];
 						}
 
-						if ($directory && is_file($source.strtolower(substr($directory, 0,strrpos($directory, '/'))) . "/" . ucfirst(substr($directory, strrpos($directory, '/') + 1)).$ext)) {
+						if ($directory && is_file($source.strtolower(substr($directory, 0,strrpos($directory, '/'))) . ucfirst(substr($directory, strrpos($directory, '/') + 0)).$ext)) {
 	    				return $segments_copy;
 						}
 
