@@ -57,9 +57,13 @@ class MY_Router extends MX_Router {
 							$directory       .= '/' . $segments_copy[0];
 						}
 
-						if ($directory && is_file($source.strtolower(substr($directory, 0,strrpos($directory, '/'))) . ucfirst(substr($directory, strrpos($directory, '/') + 0)).$ext)) {
+						$directory_string = substr($directory, 0,strrpos($directory, '/'));
+						$pos = strrpos($directory, '/');
+						$manual_directory_string = !$pos ? $directory : substr($directory, $pos + 1);
+						if ($directory && is_file($source.strtolower($directory_string) . "/" . ucfirst($manual_directory_string).$ext)) {
 	    				return $segments_copy;
 						}
+
 
 						// Move forward through the segments
 						$segments_copy = array_slice($segments_copy, 1);
