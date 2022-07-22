@@ -16,7 +16,7 @@ class MY_Router extends MX_Router {
 	private function module_name(){
 		if (!$this->module_name) {
 			include APPPATH."config/config.php";
-			$this->module_name = isset($config["current_module_name"]) ? $config["current_module_name"] : "default";
+			$this->module_name = isset($config["system_version"]) ? $config["system_version"] : "v1";
 		}
 		return $this->module_name;
 	}
@@ -24,7 +24,7 @@ class MY_Router extends MX_Router {
 
 
 	public function locate($segments)	{
-		if (isset($_SERVER['REQUEST_URI']) && ($_SERVER['REQUEST_URI'] === "/" || $_SERVER['REQUEST_URI'] === "")) {
+		if (isset($_SERVER['REQUEST_URI']) && (strtok($_SERVER['REQUEST_URI'], '?') === "/" || strtok($_SERVER['REQUEST_URI'], '?') === "")) {
 			return parent::locate($segments);
 		} else {
 			$this->module = $this->directory = "";
@@ -64,11 +64,12 @@ class MY_Router extends MX_Router {
 	    				return $segments_copy;
 						}
 
-
 						// Move forward through the segments
 						$segments_copy = array_slice($segments_copy, 1);
+
 					}
-					while (!empty($segments_copy) && $directory && is_dir($source . $directory . '/'));
+					while ($segments_copy && $directory && is_dir($source . $directory . '/'));
+
 					// Check for default module-named controller
 					if (is_file($source . $module . $ext)) {
 						$this->directory = $base_directory;
@@ -101,7 +102,6 @@ class MY_Router extends MX_Router {
 					// Go forward in segments to check for directories
 					empty($dir) OR $dir .= '/';
 					$dir .= $segments[0];
-
 					// Update segments array
 					$segments = array_slice($segments, 1);
 				}
