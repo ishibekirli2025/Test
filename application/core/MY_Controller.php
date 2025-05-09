@@ -31,8 +31,9 @@ class MY_Controller extends MX_Controller
 
     $this->__filter_params = [$this->uri->uri_string()];
     $this->call_filters("before");
-  }
 
+  }
+  
   public function _remap($method, $parameters = [])  {
     empty($parameters) ? $this->$method() : call_user_func_array(array($this, $method), $parameters);
 

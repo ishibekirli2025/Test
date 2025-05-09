@@ -144,3 +144,4 @@ $autoload['language'] = [];
 |	$autoload['model'] = array('first_model' => 'first');
 */
 $autoload['model'] = [];
+// $autoload['helper'] = array('url', 'file', 'api_helper');

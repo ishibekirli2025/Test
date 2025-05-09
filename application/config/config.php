@@ -20,7 +20,7 @@ if ($config["sub_domain_modules"]) {
 }
 
 $config["device_active"] = FALSE;
-
+$config['api_token'] = 'babd823bHja921da02232kjaew';
 $config["base_url"] = "http://hmvc.loc/";
 
 

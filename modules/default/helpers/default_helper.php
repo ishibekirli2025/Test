@@ -24,3 +24,31 @@ if(!function_exists("json_response")){
     die;
   }
 }
+
+if (!function_exists('validate_api_token')) {
+    function validate_api_token() {
+        $CI =& get_instance();
+        $headers = getallheaders();
+
+        if (isset($headers['Authorization'])) {
+            $token = str_replace('Bearer ', '', $headers['Authorization']);
+            $valid_token = $CI->config->item('api_token');
+
+            if ($token !== $valid_token) {
+                $response = [
+                    'status' => 401,
+                    'message' => 'Invalid or expired token.'
+                ];
+                echo json_encode($response);
+                exit();
+            }
+        } else {
+            $response = [
+                'status' => 400,
+                'message' => 'Authorization token missing.'
+            ];
+            echo json_encode($response);
+            exit();
+        }
+    }
+}

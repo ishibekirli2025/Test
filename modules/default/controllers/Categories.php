@@ -14,6 +14,7 @@ class Categories extends MY_Controller {
     }
 
     public function all() {
+        validate_api_token();
         $categories = $this->Category_model->index();
         $response = rest_response(Status_codes::HTTP_OK, $this->status_codes->get_message(Status_codes::HTTP_OK), $categories);
         json_response($response);
